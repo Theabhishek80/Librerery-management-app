@@ -1,0 +1,123 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f5f6fa;
+  color: #1f2430;
+}
+a { text-decoration: none; color: #4361ee; }
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  background: #1f2430;
+  color: white;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.navbar-brand a { color: white; font-weight: 700; font-size: 1.2rem; }
+.navbar-links { display: flex; gap: 20px; }
+.navbar-links a { color: #cfd3dc; }
+.navbar-links a:hover { color: white; }
+.navbar-auth { display: flex; gap: 10px; align-items: center; }
+.navbar-user { color: #cfd3dc; margin-right: 6px; }
+
+.page { max-width: 1100px; margin: 0 auto; padding: 32px 20px; }
+.subtitle { color: #666; margin-top: -8px; }
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.btn-primary { background: #4361ee; color: white; }
+.btn-primary:disabled { background: #a9b3e0; cursor: not-allowed; }
+.btn-outline { background: transparent; border: 1px solid #ccc; color: inherit; }
+.btn-danger { background: #e5484d; color: white; }
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin: 16px 0 24px;
+  font-size: 1rem;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+.book-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.book-cover { height: 140px; background: #eef0f7; display: flex; align-items: center; justify-content: center; }
+.book-cover img { width: 100%; height: 100%; object-fit: cover; }
+.book-cover-placeholder { font-size: 2.5rem; font-weight: 700; color: #a9b3e0; }
+.book-info { padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.book-info h3 { margin: 0; }
+.book-author { color: #666; margin: 0; }
+.book-badge { display: inline-block; background: #eef0f7; color: #4361ee; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; width: fit-content; }
+.book-desc { font-size: 0.85rem; color: #555; min-height: 20px; }
+.book-copies { font-size: 0.85rem; font-weight: 600; }
+.book-added-by { font-size: 0.75rem; color: #999; }
+.book-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+
+.text-green { color: #2b9348; }
+.text-red { color: #d9480f; }
+
+.pagination { display: flex; gap: 16px; align-items: center; justify-content: center; margin-top: 24px; }
+
+.auth-container { display: flex; justify-content: center; padding: 60px 20px; }
+.auth-form, .form-container {
+  background: white;
+  padding: 32px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.form-container { max-width: 600px; margin: 0 auto; }
+.auth-form label, .book-form label { font-size: 0.85rem; font-weight: 600; margin-top: 10px; }
+.auth-form input, .book-form input, .book-form textarea {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+}
+.auth-form button, .book-form button { margin-top: 20px; }
+.book-form { display: flex; flex-direction: column; gap: 4px; }
+
+.alert { padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.9rem; }
+.alert-error { background: #fde8e8; color: #c92a2a; }
+.alert-success { background: #e6fcf5; color: #087f5b; }
+.alert-info { background: #e7f5ff; color: #1971c2; }
+
+.hint { font-size: 0.8rem; color: #999; }
+
+.table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+.table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+.table th { background: #f0f1f7; }
+
+.status-badge { padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+.status-borrowed { background: #fff3bf; color: #997404; }
+.status-returned { background: #d3f9d8; color: #2b8a3e; }
+.status-overdue { background: #ffe3e3; color: #c92a2a; }
+
+.tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.tab { padding: 8px 18px; border: none; background: #eef0f7; border-radius: 6px; cursor: pointer; font-weight: 600; }
+.tab.active { background: #4361ee; color: white; }
