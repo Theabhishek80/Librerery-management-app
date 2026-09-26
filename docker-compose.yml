@@ -1,0 +1,60 @@
+# Single-machine deployment: MySQL + Spring Boot backend + React frontend
+# all running together via Docker Compose (good for a small VPS / a free
+# Oracle Cloud "Always Free" instance / your own machine).
+#
+# Usage:
+#   1. Copy .env.example to .env and fill in real values.
+#   2. docker compose up -d --build
+#   3. Visit http://<your-server-ip>        (frontend, served by nginx)
+#      Backend API is reachable at          http://<your-server-ip>:8080/api
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: library_db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/library_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      APP_JWT_SECRET: ${APP_JWT_SECRET}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost}
+      APP_ADMIN_USERNAME: ${APP_ADMIN_USERNAME:-admin}
+      APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-admin@library.com}
+      APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Frontend talks to nginx's own /api/ path, which proxies to the
+        # backend service (see frontend/nginx.conf) - no separate domain needed.
+        VITE_API_BASE_URL: /api
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  mysql_data:
