@@ -378,3 +378,358 @@ a:hover { color: var(--primary-dark); }
   .book-grid { grid-template-columns: 1fr; }
 }
 
+/* ============================================================
+   ================================================================
+   LIBRARY LAMP / NIGHT-ROOM HERO — new additions, nothing above
+   this line was changed. Everything below is additive.
+
+   HOW TO WIRE THIS UP (JSX side — not included in this file):
+     <div className={`library-hero ${lampOn ? 'lamp-on' : 'lamp-off'}`}>
+       <div className="library-hero-overlay" />
+       <div className="lamp-fixture">
+         <div className="lamp-glow-bulb" />
+         <div className="lamp-glow-halo" />
+         <div className="lamp-glow-ambient" />
+       </div>
+       <div className="library-hero-content"> ...hero text/search... </div>
+       <button
+         className="lamp-toggle"
+         aria-pressed={lampOn}
+         aria-label={lampOn ? 'Turn library lamp off' : 'Turn library lamp on'}
+         onClick={() => setLampOn(v => !v)}
+       >
+         <span className="lamp-toggle-dot" />
+         {lampOn ? 'Lamp On' : 'Lamp Off'}
+       </button>
+       <div className="dust-particles" aria-hidden="true">
+         <span></span><span></span><span></span><span></span><span></span>
+       </div>
+     </div>
+   Set the background image via CSS var below or inline style:
+     style={{ '--library-bg-image': 'url(/src/assets/library-room.jpg)' }}
+   ================================================================
+   ============================================================ */
+
+:root {
+  --lamp-warm-1: #ffd166; /* bright bulb glow */
+  --lamp-warm-2: #ffb703; /* medium halo */
+  --lamp-warm-3: #f59e0b; /* ambient wash */
+  --room-black: #0b0b10;
+  --room-black-soft: #14141c;
+  --library-bg-image: none; /* override inline per-page via style prop */
+}
+
+/* ---------------- Hero room container ---------------- */
+.library-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 78vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 32px;
+  background-color: var(--room-black);
+  background-image: var(--library-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 0 0 var(--radius) var(--radius);
+  transition: background-color 700ms ease;
+}
+
+/* Dark readability overlay over the room photo */
+.library-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(6,6,10,0.55) 0%, rgba(6,6,10,0.72) 55%, rgba(6,6,10,0.88) 100%);
+  transition: background 700ms ease, opacity 700ms ease;
+  pointer-events: none;
+}
+.library-hero.lamp-on .library-hero-overlay {
+  background:
+    linear-gradient(180deg, rgba(10,8,10,0.42) 0%, rgba(8,6,10,0.6) 55%, rgba(6,6,10,0.82) 100%);
+}
+
+/* ---------------- Hero content panel ---------------- */
+.library-hero-content {
+  position: relative;
+  z-index: 3;
+  max-width: 560px;
+  color: #f4f1ea;
+}
+.library-hero-content h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: #f8f4ec;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.55);
+}
+.library-hero-content .subtitle {
+  color: #d8d2c4;
+  font-size: 1.02rem;
+  margin-bottom: 22px;
+}
+.library-hero-content .search-input {
+  background: rgba(20, 18, 22, 0.55);
+  border: 1.5px solid rgba(255, 209, 102, 0.25);
+  color: #f4f1ea;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.library-hero-content .search-input::placeholder { color: #b9b2a2; }
+.library-hero-content .search-input:focus {
+  border-color: var(--lamp-warm-2);
+  box-shadow: 0 0 0 4px rgba(255, 183, 3, 0.15);
+}
+
+/* ---------------- Lamp fixture + glow layers ---------------- */
+.lamp-fixture {
+  position: absolute;
+  right: 12%;
+  bottom: 14%;
+  width: 10px;
+  height: 10px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* layer 1: tight bright glow at the bulb */
+.lamp-glow-bulb {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255, 209, 102, 0.95) 0%,
+    rgba(255, 209, 102, 0.55) 35%,
+    rgba(255, 209, 102, 0) 70%);
+  opacity: 0;
+  filter: blur(1px);
+  transition: opacity 600ms ease;
+}
+
+/* layer 2: medium warm halo */
+.lamp-glow-halo {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255, 183, 3, 0.35) 0%,
+    rgba(255, 183, 3, 0.16) 40%,
+    rgba(255, 183, 3, 0) 72%);
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+/* layer 3: large soft ambient room wash */
+.lamp-glow-ambient {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 640px; height: 640px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(245, 158, 11, 0.16) 0%,
+    rgba(245, 158, 11, 0.07) 45%,
+    rgba(245, 158, 11, 0) 75%);
+  opacity: 0;
+  transition: opacity 800ms ease;
+}
+
+.library-hero.lamp-on .lamp-glow-bulb { opacity: 1; }
+.library-hero.lamp-on .lamp-glow-halo { opacity: 1; }
+.library-hero.lamp-on .lamp-glow-ambient { opacity: 1; }
+
+/* books/shelves near the lamp catch a touch of warmth when lit */
+.library-hero.lamp-on .library-hero-overlay {
+  mix-blend-mode: normal;
+}
+
+/* ---------------- Lamp toggle control ---------------- */
+.lamp-toggle {
+  position: absolute;
+  z-index: 4;
+  top: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  background: rgba(20, 18, 22, 0.55);
+  color: #f0ebe0;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 500ms ease, box-shadow 500ms ease, background 500ms ease;
+}
+.lamp-toggle:hover { border-color: rgba(255, 183, 3, 0.4); }
+.lamp-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 183, 3, 0.35);
+}
+.lamp-toggle-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #6b6558;
+  transition: background 500ms ease, box-shadow 500ms ease;
+}
+.library-hero.lamp-on .lamp-toggle {
+  border-color: rgba(255, 183, 3, 0.4);
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.25);
+}
+.library-hero.lamp-on .lamp-toggle-dot {
+  background: var(--lamp-warm-1);
+  box-shadow: 0 0 8px 2px rgba(255, 209, 102, 0.8);
+}
+
+/* ---------------- Dark navbar variant for the library theme ---------------- */
+.navbar.navbar-library {
+  background: rgba(10, 9, 12, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.35);
+  transition: border-color 600ms ease, box-shadow 600ms ease;
+}
+.navbar.navbar-library .navbar-brand a { color: #f4f1ea; }
+.navbar.navbar-library .brand-accent { color: #b9b2a2; }
+.navbar.navbar-library .navbar-links a { color: rgba(240, 235, 224, 0.75); }
+.navbar.navbar-library .navbar-links a:hover { color: #f4f1ea; }
+.navbar.navbar-library .navbar-links a::after { background: var(--lamp-warm-1); }
+.navbar.navbar-library .navbar-user { color: rgba(240, 235, 224, 0.85); }
+.navbar.navbar-library .btn-outline {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #f4f1ea;
+}
+.navbar.navbar-library .btn-outline:hover { background: rgba(255, 255, 255, 0.1); }
+
+/* lamp-on state gives the navbar a faint warm edge */
+.navbar.navbar-library.lamp-on {
+  border-bottom-color: rgba(255, 183, 3, 0.25);
+  box-shadow: 0 2px 24px rgba(245, 158, 11, 0.12);
+}
+
+/* ---------------- Book cards on the dark hero (glass variant) ---------------- */
+.book-card.book-card-dark {
+  background: rgba(24, 21, 26, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.book-card.book-card-dark:hover {
+  border-color: rgba(255, 183, 3, 0.3);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+}
+.book-card.book-card-dark .book-info h3,
+.book-card.book-card-dark .book-copies { color: #f4f1ea; }
+.book-card.book-card-dark .book-author,
+.book-card.book-card-dark .book-desc { color: #c9c2b3; }
+.book-card.book-card-dark .book-badge {
+  background: rgba(255, 183, 3, 0.15);
+  color: var(--lamp-warm-1);
+}
+.book-card.book-card-dark .book-added-by { color: #8f8879; }
+
+/* ---------------- Subtle dust particles (lamp-on only) ---------------- */
+.dust-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+.library-hero.lamp-on .dust-particles { opacity: 0.5; }
+
+.dust-particles span {
+  position: absolute;
+  bottom: -10px;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 209, 102, 0.5);
+  animation: dust-float 14s linear infinite;
+}
+.dust-particles span:nth-child(1) { left: 62%; animation-delay: 0s; animation-duration: 13s; }
+.dust-particles span:nth-child(2) { left: 68%; animation-delay: 2.5s; animation-duration: 16s; }
+.dust-particles span:nth-child(3) { left: 74%; animation-delay: 5s; animation-duration: 12s; }
+.dust-particles span:nth-child(4) { left: 66%; animation-delay: 7.5s; animation-duration: 18s; }
+.dust-particles span:nth-child(5) { left: 71%; animation-delay: 1s; animation-duration: 15s; }
+
+@keyframes dust-float {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  10%  { opacity: 0.6; }
+  50%  { transform: translateY(-140px) translateX(8px); opacity: 0.4; }
+  90%  { opacity: 0.15; }
+  100% { transform: translateY(-260px) translateX(-6px); opacity: 0; }
+}
+
+/* extremely subtle flicker on the halo only, never the base glow */
+@keyframes lamp-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  94% { opacity: 0.92; }
+  96% { opacity: 1; }
+  98% { opacity: 0.95; }
+}
+.library-hero.lamp-on .lamp-glow-halo {
+  animation: lamp-flicker 7s ease-in-out infinite;
+}
+
+/* ---------------- Responsive: keep the room + lamp visible everywhere ---------------- */
+@media (max-width: 1024px) {
+  .library-hero { min-height: 66vh; padding: 48px 24px; }
+  .lamp-fixture { right: 8%; bottom: 12%; }
+  .lamp-glow-ambient { width: 480px; height: 480px; }
+}
+
+@media (max-width: 768px) {
+  .library-hero { min-height: 58vh; padding: 40px 20px; align-items: center; text-align: center; }
+  .library-hero-content { max-width: 100%; }
+  .lamp-fixture { right: 50%; bottom: 8%; transform: translateX(50%); }
+  .lamp-glow-halo { width: 200px; height: 200px; }
+  .lamp-glow-ambient { width: 380px; height: 380px; }
+  .lamp-toggle { top: 16px; right: 16px; padding: 8px 14px; font-size: 0.8rem; }
+}
+
+@media (max-width: 480px) {
+  .library-hero { min-height: 52vh; padding: 32px 16px; background-position: center 30%; }
+  .library-hero-content h1 { font-size: 1.7rem; }
+  .lamp-glow-bulb { width: 44px; height: 44px; }
+  .lamp-glow-halo { width: 160px; height: 160px; }
+  .lamp-glow-ambient { width: 280px; height: 280px; }
+  .dust-particles span { width: 2px; height: 2px; }
+}
+
+/* ---------------- Accessibility: respect reduced motion ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .library-hero,
+  .library-hero-overlay,
+  .lamp-glow-bulb,
+  .lamp-glow-halo,
+  .lamp-glow-ambient,
+  .lamp-toggle,
+  .lamp-toggle-dot,
+  .navbar.navbar-library,
+  .dust-particles {
+    transition: none !important;
+  }
+  .lamp-glow-halo { animation: none !important; }
+  .dust-particles span { animation: none !important; opacity: 0 !important; }
+  /* lamp on/off state still applies instantly via opacity, just no animated transition */
+}
+
