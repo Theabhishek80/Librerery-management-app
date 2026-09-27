@@ -13,7 +13,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/">📚 Library MS</Link>
+         <Link to="/"><strong>Library Management</strong> <span className="brand-accent">— Abhishek</span></Link>
       </div>
       <div className="navbar-links">
         <Link to="/">All Books</Link>
